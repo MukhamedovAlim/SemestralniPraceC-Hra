@@ -1,0 +1,11 @@
+# REFERENCES.TXT - External Assets Documentation
+
+## Graphics
+Space Ship Construction Kit /content/ - CC-BY-SA 3.0, GPL 3.0
+Author: Skorpio
+Source: https://opengameart.org/content/space-ship-construction-kit
+
+---
+### Important Notes:
+- **CC-BY-SA 3.0**: You must credit the creator and share modifications under the same license.
+- **GPL 3.0**: Your project must also be GPL 3.0 licensed if you use this asset.

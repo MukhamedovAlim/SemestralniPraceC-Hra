@@ -23,3 +23,6 @@ C:\Users\alim2\Documents\SemestralniPraceC#\obj\Debug\net8.0\refint\SemestralniP
 C:\Users\alim2\Documents\SemestralniPraceC#\obj\Debug\net8.0\SemestralniPraceC#.pdb
 C:\Users\alim2\Documents\SemestralniPraceC#\obj\Debug\net8.0\SemestralniPraceC#.genruntimeconfig.cache
 C:\Users\alim2\Documents\SemestralniPraceC#\obj\Debug\net8.0\ref\SemestralniPraceC#.dll
+C:\Users\alim2\Documents\SemestralniPraceC#\bin\Debug\net8.0\Content\1.xnb
+C:\Users\alim2\Documents\SemestralniPraceC#\obj\Debug\net8.0\SemestralniPraceC#.sourcelink.json
+C:\Users\alim2\Documents\SemestralniPraceC#\bin\Debug\net8.0\Content\bulletSpace.xnb
