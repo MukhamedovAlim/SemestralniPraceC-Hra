@@ -26,3 +26,8 @@ C:\Users\alim2\Documents\SemestralniPraceC#\obj\Debug\net8.0\ref\SemestralniPrac
 C:\Users\alim2\Documents\SemestralniPraceC#\bin\Debug\net8.0\Content\1.xnb
 C:\Users\alim2\Documents\SemestralniPraceC#\obj\Debug\net8.0\SemestralniPraceC#.sourcelink.json
 C:\Users\alim2\Documents\SemestralniPraceC#\bin\Debug\net8.0\Content\bulletSpace.xnb
+C:\Users\alim2\Documents\SemestralniPraceC#\bin\Debug\net8.0\Content\flaunch.xnb
+C:\Users\alim2\Documents\SemestralniPraceC#\bin\Debug\net8.0\Content\iceball.xnb
+C:\Users\alim2\Documents\SemestralniPraceC#\bin\Debug\net8.0\Content\slimeball.xnb
+C:\Users\alim2\Documents\SemestralniPraceC#\bin\Debug\net8.0\Content\2B.xnb
+C:\Users\alim2\Documents\SemestralniPraceC#\bin\Debug\net8.0\Content\ScoreFont.xnb

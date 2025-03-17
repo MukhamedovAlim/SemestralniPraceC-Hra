@@ -25,6 +25,18 @@
 /processorParam:TextureFormat=Color
 /build:1.png
 
+#begin 2B.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:2B.png
+
 #begin bulletSpace.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -36,4 +48,29 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:bulletSpace.png
+
+#begin flaunch.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:flaunch.wav
+
+#begin iceball.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:iceball.wav
+
+#begin ScoreFont.spritefont
+/importer:FontDescriptionImporter
+/processor:LocalizedFontProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:ScoreFont.spritefont
+
+#begin slimeball.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:slimeball.wav
 

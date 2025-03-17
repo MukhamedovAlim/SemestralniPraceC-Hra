@@ -5,9 +5,19 @@
   <Config />
   <SourceFiles>
     <File>c:/Users/alim2/Documents/SemestralniPraceC#/Content/1.png</File>
+    <File>c:/Users/alim2/Documents/SemestralniPraceC#/Content/2B.png</File>
     <File>c:/Users/alim2/Documents/SemestralniPraceC#/Content/bulletSpace.png</File>
+    <File>c:/Users/alim2/Documents/SemestralniPraceC#/Content/flaunch.wav</File>
+    <File>c:/Users/alim2/Documents/SemestralniPraceC#/Content/iceball.wav</File>
+    <File>c:/Users/alim2/Documents/SemestralniPraceC#/Content/ScoreFont.spritefont</File>
+    <File>c:/Users/alim2/Documents/SemestralniPraceC#/Content/slimeball.wav</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
   </DestFiles>

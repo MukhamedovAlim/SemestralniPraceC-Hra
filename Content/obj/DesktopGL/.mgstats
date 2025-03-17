@@ -1,3 +1,8 @@
 Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
-"c:/Users/alim2/Documents/SemestralniPraceC#/Content/1.png","c:/Users/alim2/Documents/SemestralniPraceC#/Content/bin/DesktopGL/1.xnb","TextureProcessor","Texture2DContent",15069,67045,0.1004373
-"c:/Users/alim2/Documents/SemestralniPraceC#/Content/bulletSpace.png","c:/Users/alim2/Documents/SemestralniPraceC#/Content/bin/DesktopGL/bulletSpace.xnb","TextureProcessor","Texture2DContent",6669,6917,0.0803775
+"c:/Users/alim2/Documents/SemestralniPraceC#/Content/1.png","c:/Users/alim2/Documents/SemestralniPraceC#/Content/bin/DesktopGL/1.xnb","TextureProcessor","Texture2DContent",15069,67045,0.0884404
+"c:/Users/alim2/Documents/SemestralniPraceC#/Content/2B.png","c:/Users/alim2/Documents/SemestralniPraceC#/Content/bin/DesktopGL/2B.xnb","TextureProcessor","Texture2DContent",25614,106749,0.0056185
+"c:/Users/alim2/Documents/SemestralniPraceC#/Content/bulletSpace.png","c:/Users/alim2/Documents/SemestralniPraceC#/Content/bin/DesktopGL/bulletSpace.xnb","TextureProcessor","Texture2DContent",6669,6917,0.0025821
+"c:/Users/alim2/Documents/SemestralniPraceC#/Content/flaunch.wav","c:/Users/alim2/Documents/SemestralniPraceC#/Content/bin/DesktopGL/flaunch.xnb","SoundEffectProcessor","SoundEffectContent",99304,99365,0.3800122
+"c:/Users/alim2/Documents/SemestralniPraceC#/Content/iceball.wav","c:/Users/alim2/Documents/SemestralniPraceC#/Content/bin/DesktopGL/iceball.xnb","SoundEffectProcessor","SoundEffectContent",271824,271885,0.3706998
+"c:/Users/alim2/Documents/SemestralniPraceC#/Content/ScoreFont.spritefont","c:/Users/alim2/Documents/SemestralniPraceC#/Content/bin/DesktopGL/ScoreFont.xnb","LocalizedFontProcessor","SpriteFontContent",633,21538,0.0593581
+"c:/Users/alim2/Documents/SemestralniPraceC#/Content/slimeball.wav","c:/Users/alim2/Documents/SemestralniPraceC#/Content/bin/DesktopGL/slimeball.xnb","SoundEffectProcessor","SoundEffectContent",121164,121225,0.3860487

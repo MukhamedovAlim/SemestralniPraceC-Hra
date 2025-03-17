@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <SourceFile>C:/Users/alim2/Documents/SemestralniPraceC#/Content/iceball.wav</SourceFile>
+  <SourceTime>2009-07-18T02:36:08+02:00</SourceTime>
+  <DestFile>C:/Users/alim2/Documents/SemestralniPraceC#/Content/bin/DesktopGL/Content/iceball.xnb</DestFile>
+  <DestTime>2025-02-27T16:34:02.8619637+01:00</DestTime>
+  <Importer>WavImporter</Importer>
+  <ImporterTime>2024-08-16T19:05:56+02:00</ImporterTime>
+  <Processor>SoundEffectProcessor</Processor>
+  <ProcessorTime>2024-08-16T19:05:56+02:00</ProcessorTime>
+  <Parameters>
+    <Key>Quality</Key>
+    <Value>Best</Value>
+  </Parameters>
+  <Dependencies />
+  <BuildAsset />
+  <BuildOutput />
+</PipelineBuildEvent>
