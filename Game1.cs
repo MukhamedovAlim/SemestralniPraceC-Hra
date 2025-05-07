@@ -28,6 +28,7 @@ namespace SemestralniPraceC_
     {
         Menu,
         Playing,
+        Paused,
         Options,
         Victory,  // New state when the player wins
         GameOver  // (Optional) In case you want a losing condition
@@ -45,7 +46,8 @@ namespace SemestralniPraceC_
         private int basePoints = 100;      // Base points for an enemy at level 1.
         private int baseThreshold = 1000;  // Base threshold for leveling up.
         private int scoreForNextLevel = 1000;  // Initial threshold.
-
+        private string[] pauseMenuItems = { "Continue", "Leave to Menu" };
+        private int pauseSelectionIndex = 0;
         private int selectedLevel = 1; // Default level selected in the menu
         private const int maxLevel = 10;  // Maximum level you allow the player to select
         private int currentLevel = 1;
@@ -170,255 +172,113 @@ namespace SemestralniPraceC_
             KeyboardState currentKeyboardState = Keyboard.GetState();
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+            // Handle Victory/GameOver
             if (currentState == GameState.Victory || currentState == GameState.GameOver)
             {
+                SaveHighScore();
                 if (currentKeyboardState.IsKeyDown(Keys.Enter) && previousKeyboardState.IsKeyUp(Keys.Enter))
                 {
-                    // Reset game variables
-                    score = 0;
-                    playerHP = 100; // Reset HP
-                    currentLevel = selectedLevel;  // or reset to a default level like 1
-                    enemySpeed = 100f;
-                    scoreForNextLevel = baseThreshold;
-                    enemies.Clear();
-                    bullets.Clear();
+                    // Restart game
+                    ResetGame();
+                    currentState = GameState.Playing;
+                    return;
+                }
+                if (currentKeyboardState.IsKeyDown(Keys.Escape) && previousKeyboardState.IsKeyUp(Keys.Escape))
+                {
+                    ResetGame();
                     currentState = GameState.Menu;
+                    return;
                 }
             }
 
-            // Only exit when in Playing state (or adjust as needed)
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
-                (currentState == GameState.Playing && currentKeyboardState.IsKeyDown(Keys.Escape)))
-            {
+            // Global Exit
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 Exit();
+
+            // Pause toggle from Playing
+            if (currentState == GameState.Playing && currentKeyboardState.IsKeyDown(Keys.Escape) && previousKeyboardState.IsKeyUp(Keys.Escape))
+            {
+                currentState = GameState.Paused;
+                pauseSelectionIndex = 0;
+                return;
             }
 
+            // Pause menu
+            if (currentState == GameState.Paused)
+            {
+                // Navigate Pause menu
+                if (currentKeyboardState.IsKeyDown(Keys.Up) && previousKeyboardState.IsKeyUp(Keys.Up))
+                    pauseSelectionIndex = (pauseSelectionIndex + pauseMenuItems.Length - 1) % pauseMenuItems.Length;
+                if (currentKeyboardState.IsKeyDown(Keys.Down) && previousKeyboardState.IsKeyUp(Keys.Down))
+                    pauseSelectionIndex = (pauseSelectionIndex + 1) % pauseMenuItems.Length;
+
+                if (currentKeyboardState.IsKeyDown(Keys.Enter) && previousKeyboardState.IsKeyUp(Keys.Enter))
+                {
+                    switch (pauseSelectionIndex)
+                    {
+                        case 0: // Continue
+                            currentState = GameState.Playing;
+                            previousKeyboardState = currentKeyboardState; // consume input
+                            return;
+
+                        case 1: // Leave to menu
+                            ResetGame();
+                            currentState = GameState.Menu;
+                            previousKeyboardState = currentKeyboardState; // consume input
+                            return;
+                    }
+                }
+            }
+
+            // Main Menu
             if (currentState == GameState.Menu)
             {
-                // Navigate the menu
+                // Navigate main menu
                 if (currentKeyboardState.IsKeyDown(Keys.Up) && previousKeyboardState.IsKeyUp(Keys.Up))
-                {
-                    menuSelectionIndex--;
-                    if (menuSelectionIndex < 0)
-                        menuSelectionIndex = menuItems.Length - 1; // Wrap around to bottom
-                }
+                    menuSelectionIndex = (menuSelectionIndex + menuItems.Length - 1) % menuItems.Length;
                 if (currentKeyboardState.IsKeyDown(Keys.Down) && previousKeyboardState.IsKeyUp(Keys.Down))
-                {
-                    menuSelectionIndex++;
-                    if (menuSelectionIndex >= menuItems.Length)
-                        menuSelectionIndex = 0; // Wrap around to top
-                }
-                // If "Start Game" is highlighted, allow level selection with left/right arrows
-                if (menuSelectionIndex == 0)
-                {
-                    if (currentKeyboardState.IsKeyDown(Keys.Left) && previousKeyboardState.IsKeyUp(Keys.Left))
-                    {
-                        if (selectedLevel > 1)
-                            selectedLevel--;
-                    }
-                    if (currentKeyboardState.IsKeyDown(Keys.Right) && previousKeyboardState.IsKeyUp(Keys.Right))
-                    {
-                        if (selectedLevel < maxLevel)
-                            selectedLevel++;
-                    }
-                }
-                // Select menu option with Enter
+                    menuSelectionIndex = (menuSelectionIndex + 1) % menuItems.Length;
+                // Level selection
+                if (currentKeyboardState.IsKeyDown(Keys.Left) && previousKeyboardState.IsKeyUp(Keys.Left) && selectedLevel > 1)
+                    selectedLevel--;
+                if (currentKeyboardState.IsKeyDown(Keys.Right) && previousKeyboardState.IsKeyUp(Keys.Right) && selectedLevel < maxLevel)
+                    selectedLevel++;
+                // Confirm
                 if (currentKeyboardState.IsKeyDown(Keys.Enter) && previousKeyboardState.IsKeyUp(Keys.Enter))
                 {
                     switch (menuSelectionIndex)
                     {
-                        case 0: // Start Game
+                        case 0:
                             currentLevel = selectedLevel;
                             currentState = GameState.Playing;
                             break;
-                        case 1: // Options
+                        case 1:
                             currentState = GameState.Options;
                             break;
-                        case 2: // Exit
+                        case 2:
                             Exit();
                             break;
                     }
+                    return;
                 }
             }
-            else if (currentState == GameState.Playing)
+
+            // Playing state logic omitted for brevity
+            if (currentState == GameState.Playing)
             {
-                Rectangle GetSpaceshipBounds()
-                {
-                    return new Rectangle((int)spaceshipPosition.X, (int)spaceshipPosition.Y, spaceshipTexture.Width, spaceshipTexture.Height);
-                }
-                // Check collisions between enemies and the spaceship
-                Rectangle spaceshipBounds = GetSpaceshipBounds();
-                for (int i = enemies.Count - 1; i >= 0; i--)
-                {
-                    Enemy enemy = enemies[i];
-                    if (enemy.GetBounds().Intersects(spaceshipBounds))
-                    {
-                        // Collision detected: you lose the game
-                        currentState = GameState.GameOver;
-                        break;
-                    }
-                }
-                // Check if any enemy is too close to the bottom of the playable area
-                for (int i = enemies.Count - 1; i >= 0; i--)
-                {
-                    Enemy enemy = enemies[i];
-                    // If enemy reaches 90% of the playable area's height, damage the player
-                    if (enemy.Position.Y + enemyTexture.Height >= playableArea.Y + (int)(playableArea.Height * 0.99))
-                    {
-                        playerHP -= 10; // Reduce HP by 10, adjust as needed
-                        enemy.IsActive = false; // Optionally remove the enemy
-                        enemies.RemoveAt(i);
-
-                        // If HP drops to zero or below, trigger game over
-                        if (playerHP <= 0)
-                        {
-                            currentState = GameState.GameOver;
-                            break;
-                        }
-                    }
-                }
-
-
-                // Timer-based enemy spawning
-                float spawnInterval = baseSpawnInterval / currentLevel; // Faster spawn at higher levels
-                spawnTimer -= deltaTime;
-                if (spawnTimer <= 0f)
-                {
-                    SpawnEnemy();
-                    spawnTimer = spawnInterval;
-                }
-
-                // Update bullets
-                for (int i = bullets.Count - 1; i >= 0; i--)
-                {
-                    bullets[i].Update(deltaTime);
-                    if (!bullets[i].IsActive)
-                        bullets.RemoveAt(i);
-                }
-                // Update enemies
-                for (int i = enemies.Count - 1; i >= 0; i--)
-                {
-                    enemies[i].Update(deltaTime);
-                    if (!enemies[i].IsActive)
-                    {
-                        enemies.RemoveAt(i);
-                    }
-                }
-                // Check collisions between bullets and enemies
-                for (int i = enemies.Count - 1; i >= 0; i--)
-                {
-                    Enemy enemy = enemies[i];
-                    Rectangle enemyBounds = enemy.GetBounds();
-                    for (int j = bullets.Count - 1; j >= 0; j--)
-                    {
-                        Bullet bullet = bullets[j];
-                        Rectangle bulletBounds = new Rectangle((int)bullet.Position.X, (int)bullet.Position.Y, bulletTexture.Width, bulletTexture.Height);
-                        if (enemyBounds.Intersects(bulletBounds))
-                        {
-                            enemy.IsActive = false;
-                            bullet.IsActive = false;
-                            // Increase score: points scale with the current level
-                            score += basePoints * currentLevel;
-                            // Create explosion particles
-                            for (int y = 0; y < 50; y++)
-                            {
-                                float angle = (float)(random.NextDouble() * MathHelper.TwoPi);
-                                float speed = (float)(random.NextDouble() * 150 + 50);
-                                Vector2 velocity = new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)) * speed;
-                                float lifetime = (float)(random.NextDouble() * 0.5 + 0.5);
-                                float size = (float)(random.NextDouble() * 0.5 + 0.5);
-                                particleSystem.AddParticle(bullet.Position, velocity, lifetime, Color.Red, size);
-                            }
-                            soundInstance2.Volume = 0.3f;
-                            soundInstance2.Play();
-                            break;
-                        }
-                    }
-                }
-                // Check if it's time to level up
-                if (score >= scoreForNextLevel)
-                {
-                    score -= scoreForNextLevel; // Optionally carry over extra points
-
-                    // If the next level exceeds maxLevel, the player wins
-                    if (currentLevel >= maxLevel)
-                    {
-                        currentState = GameState.Victory;
-                    }
-                    else
-                    {
-                        currentLevel++;
-                        // Quadratic scaling: new threshold increases significantly each level
-                        scoreForNextLevel = baseThreshold * currentLevel * currentLevel;
-                        enemySpeed *= 1.1f;  // Increase enemy speed by 10%
-                    }
-                }
-
-                // Process game-specific input and update other systems only in Playing state
-                ProcessInput(currentKeyboardState, gameTime);
-                UpdateBullets(gameTime);
-                UpdateParticles(gameTime);
-                UpdateRecoil(gameTime);
+                UpdatePlaying(gameTime);
             }
+            // Options
             else if (currentState == GameState.Options)
             {
-                // Options menu logic: press Escape to return to the main menu
                 if (currentKeyboardState.IsKeyDown(Keys.Escape) && previousKeyboardState.IsKeyUp(Keys.Escape))
-                {
                     currentState = GameState.Menu;
-                }
-            }
-            else if (currentState == GameState.Victory)
-            {
-                SaveHighScore();
-                if (currentKeyboardState.IsKeyDown(Keys.Enter) && previousKeyboardState.IsKeyUp(Keys.Enter))
-                {
-                    // Reset game variables if necessary
-                    score = 0;
-                    currentLevel = selectedLevel;  // or reset to 1
-                    enemySpeed = 100f;
-                    scoreForNextLevel = baseThreshold;
-                    enemies.Clear();
-                    bullets.Clear();
-                    currentState = GameState.Menu;
-                }
-                if (currentState == GameState.Victory || currentState == GameState.GameOver)
-                {
-                    if (currentKeyboardState.IsKeyDown(Keys.Enter) && previousKeyboardState.IsKeyUp(Keys.Enter))
-                    {
-                        // Reset game variables
-                        score = 0;
-                        playerHP = 100; // Reset HP
-                        currentLevel = selectedLevel;  // or reset to a default level like 1
-                        enemySpeed = 100f;
-                        scoreForNextLevel = baseThreshold;
-                        enemies.Clear();
-                        bullets.Clear();
-                        currentState = GameState.Menu;
-                    }
-                }
-
-            }
-            else if (currentState == GameState.GameOver)
-            {
-                SaveHighScore();
-                if (currentKeyboardState.IsKeyDown(Keys.Enter) && previousKeyboardState.IsKeyUp(Keys.Enter))
-                {
-                    // Optionally reset game variables
-                    score = 0;
-                    currentLevel = selectedLevel;  // or reset to a default level like 1
-                    enemySpeed = 100f;
-                    scoreForNextLevel = baseThreshold;
-                    enemies.Clear();
-                    bullets.Clear();
-                    currentState = GameState.Menu;
-                }
             }
 
-            // Store current keyboard state for next frame
             previousKeyboardState = currentKeyboardState;
             base.Update(gameTime);
         }
+
 
         private void ProcessInput(KeyboardState keyboardState, GameTime gameTime)
         {
@@ -530,96 +390,172 @@ namespace SemestralniPraceC_
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
-            if (currentState == GameState.Menu)
+
+            switch (currentState)
             {
-                // Draw a title (optional)
-                spriteBatch.DrawString(scoreFont, "My Awesome Game", new Vector2(100, 50), Color.White);
-                // Draw the high score at a fixed position
-                spriteBatch.DrawString(scoreFont, "High Score: " + highScore, new Vector2(100, 100), Color.White);
-                // Draw menu items
-                for (int i = 0; i < menuItems.Length; i++)
-                {
-                    Color itemColor = (i == menuSelectionIndex) ? Color.Yellow : Color.White;
-                    Vector2 position = new Vector2(100, 150 + i * 40);
-                    spriteBatch.DrawString(scoreFont, menuItems[i], position, itemColor);
-                }
-                // If the "Start Game" option is highlighted, show the current level selection
-                if (menuSelectionIndex == 0)
-                {
-                    spriteBatch.DrawString(scoreFont, "Start at Level: " + selectedLevel, new Vector2(100, 150 + menuItems.Length * 40), Color.White);
-                }
+                case GameState.Menu:
+                    DrawMainMenu();
+                    break;
+                case GameState.Paused:
+                    DrawPauseMenu();
+                    break;
+                case GameState.Options:
+                    DrawOptions();
+                    break;
+                case GameState.Victory:
+                    DrawVictory();
+                    break;
+                case GameState.GameOver:
+                    DrawGameOver();
+                    break;
+                case GameState.Playing:
+                    DrawPlaying();
+                    break;
             }
-            else if (currentState == GameState.Playing)
-            {
-                // Apply recoil offset when active
-                Vector2 drawPosition = isRecoilActive ? spaceshipPosition + recoilOffset : spaceshipPosition;
-                spriteBatch.Draw(spaceshipTexture, drawPosition, Color.White);
-                particleSystem.Draw(spriteBatch);
-                // Draw bullets
-                float bulletScale = 0.5f;
-                foreach (var bullet in bullets)
-                {
-                    spriteBatch.Draw(bulletTexture,
-                                     bullet.Position,
-                                     null,
-                                     Color.White,
-                                     0f,
-                                     new Vector2(bulletTexture.Width / 2, bulletTexture.Height / 2),
-                                     bulletScale,
-                                     SpriteEffects.None,
-                                     0f);
-                    int scaledWidth = (int)(bulletTexture.Width * bulletScale);
-                    int scaledHeight = (int)(bulletTexture.Height * bulletScale);
-                    Rectangle bulletBounds = new Rectangle(
-                        (int)(bullet.Position.X - scaledWidth / 2f),
-                        (int)(bullet.Position.Y - scaledHeight / 2f),
-                        scaledWidth,
-                        scaledHeight
-                    );
-                    spriteBatch.Draw(boundingBoxTexture, bulletBounds, Color.Red * 0.5f);
-                }
-                foreach (Enemy enemy in enemies)
-                {
-                    enemy.Draw(spriteBatch);
-                }
-                // Draw score and level on top
-                spriteBatch.DrawString(scoreFont, "Score: " + score, new Vector2(10, 10), Color.White);
-                spriteBatch.DrawString(scoreFont, "Level: " + currentLevel, new Vector2(10, 40), Color.White);
-                // Draw left and right borders for the playable area
-                Texture2D sideBorderTexture = new Texture2D(GraphicsDevice, 1, 1);
-                sideBorderTexture.SetData(new[] { Color.Yellow });
-                // Left border
-                spriteBatch.Draw(sideBorderTexture, new Rectangle(playableArea.X, playableArea.Y, 2, playableArea.Height), Color.Yellow);
-                // Right border
-                spriteBatch.Draw(sideBorderTexture, new Rectangle(playableArea.X + playableArea.Width - 2, playableArea.Y, 2, playableArea.Height), Color.Yellow);
-            }
-            else if (currentState == GameState.Options)
-            {
-                // Draw Options screen
-                spriteBatch.DrawString(scoreFont, "Options - Press Escape to return", new Vector2(100, 150), Color.White);
-            }
-            else if (currentState == GameState.Victory)
-            {
-                spriteBatch.DrawString(scoreFont, "Congratulations!", new Vector2(100, 100), Color.Green);
-                spriteBatch.DrawString(scoreFont, "You have completed all levels!", new Vector2(100, 150), Color.Green);
-                spriteBatch.DrawString(scoreFont, "Final Score: " + score, new Vector2(100, 200), Color.Green);
-                spriteBatch.DrawString(scoreFont, "Press Enter to return to the Menu", new Vector2(100, 250), Color.Yellow);
-            }
-            else if (currentState == GameState.GameOver)
-            {
-                spriteBatch.DrawString(scoreFont, "Game Over!", new Vector2(100, 100), Color.Red);
-                spriteBatch.DrawString(scoreFont, "Final Score: " + score, new Vector2(100, 150), Color.Red);
-                spriteBatch.DrawString(scoreFont, "Press Enter to return to the Menu", new Vector2(100, 200), Color.Yellow);
-            }
-            // Draw score, level, and HP on top
-            spriteBatch.DrawString(scoreFont, "Score: " + score, new Vector2(10, 10), Color.White);
-            spriteBatch.DrawString(scoreFont, "Level: " + currentLevel, new Vector2(10, 40), Color.White);
-            spriteBatch.DrawString(scoreFont, "HP: " + playerHP, new Vector2(10, 70), Color.White);
 
             spriteBatch.End();
             base.Draw(gameTime);
         }
+        private void DrawMainMenu()
+        {
+            Viewport vp = GraphicsDevice.Viewport;
+            int centerX = vp.Width / 2;
+            int centerY = vp.Height / 2;
 
+            // Title
+            string title = "My Awesome Game";
+            float titleScale = 2f;
+            Vector2 titleSize = scoreFont.MeasureString(title) * titleScale;
+
+            // High score text
+            string hsText = "High Score: " + highScore;
+            Vector2 hsSize = scoreFont.MeasureString(hsText);
+
+            // Menu items
+            float lineHeight = scoreFont.LineSpacing;
+            int itemCount = menuItems.Length;
+
+            // Calculate vertical start so everything is centered
+            float totalHeight = titleSize.Y + 20 + hsSize.Y + 10 + (itemCount * lineHeight) + 10 + lineHeight + 10;
+            float startY = centerY - totalHeight / 2;
+
+            // Draw title
+            Vector2 titlePos = new Vector2(centerX - titleSize.X / 2, startY);
+            spriteBatch.DrawString(scoreFont, title, titlePos, Color.White, 0f, Vector2.Zero, titleScale, SpriteEffects.None, 0f);
+
+            // Draw high score
+            Vector2 hsPos = new Vector2(centerX - hsSize.X / 2, startY + titleSize.Y + 20);
+            spriteBatch.DrawString(scoreFont, hsText, hsPos, Color.White);
+
+            // Draw menu items
+            for (int i = 0; i < itemCount; i++)
+            {
+                Vector2 itemSize = scoreFont.MeasureString(menuItems[i]);
+                float y = hsPos.Y + lineHeight + 10 + (i * lineHeight);
+                Vector2 pos = new Vector2(centerX - itemSize.X / 2, y);
+                Color col = (i == menuSelectionIndex) ? Color.Yellow : Color.White;
+                spriteBatch.DrawString(scoreFont, menuItems[i], pos, col);
+            }
+
+            // Draw level selector
+            string lvlText = "Start at Level: " + selectedLevel;
+            Vector2 lvlSize = scoreFont.MeasureString(lvlText);
+            float lvlY = hsPos.Y + lineHeight + 10 + (itemCount * lineHeight) + 10;
+            Vector2 lvlPos = new Vector2(centerX - lvlSize.X / 2, lvlY);
+            spriteBatch.DrawString(scoreFont, lvlText, lvlPos, Color.White);
+        }
+
+        private void DrawPauseMenu()
+        {
+            Viewport vp = GraphicsDevice.Viewport;
+            int centerX = vp.Width / 2;
+            int centerY = vp.Height / 2;
+
+            float lineHeight = scoreFont.LineSpacing;
+            float padding = 10f;
+            int itemCount = pauseMenuItems.Length;
+            float totalHeight = itemCount * lineHeight + (itemCount - 1) * padding;
+            float startY = centerY - totalHeight / 2;
+
+            for (int i = 0; i < itemCount; i++)
+            {
+                Vector2 size = scoreFont.MeasureString(pauseMenuItems[i]);
+                Vector2 pos = new Vector2(centerX - size.X / 2, startY + i * (lineHeight + padding));
+                Color col = (i == pauseSelectionIndex) ? Color.Yellow : Color.White;
+                spriteBatch.DrawString(scoreFont, pauseMenuItems[i], pos, col);
+            }
+        }
+
+        private void DrawGameOver()
+        {
+            Viewport vp = GraphicsDevice.Viewport;
+            int centerX = vp.Width / 2;
+            int centerY = vp.Height / 2;
+            string[] lines = {
+        "Game Over!",
+        "Final Score: " + score,
+        "Press Enter to Restart",
+        "Press Escape for Menu"
+    };
+            Color[] cols = { Color.Red, Color.Red, Color.White, Color.White };
+            float lh = scoreFont.LineSpacing;
+            float totalH = lines.Length * lh + (lines.Length - 1) * 10;
+            float startY = centerY - totalH / 2;
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                Vector2 size = scoreFont.MeasureString(lines[i]);
+                Vector2 pos = new Vector2(centerX - size.X / 2, startY + i * (lh + 10));
+                spriteBatch.DrawString(scoreFont, lines[i], pos, cols[i]);
+            }
+        }
+        private void DrawVictory()
+        {
+            Viewport vp = GraphicsDevice.Viewport;
+            int centerX = vp.Width / 2;
+            int centerY = vp.Height / 2;
+            string[] lines = {
+        "Congratulations!",
+        "You have completed all levels!",
+        "Final Score: " + score,
+        "Press Enter to Restart",
+        "Press Escape for Menu"
+    };
+            Color[] cols = { Color.Green, Color.Green, Color.Green, Color.White, Color.White };
+            float lh = scoreFont.LineSpacing;
+            float totalH = lines.Length * lh + (lines.Length - 1) * 10;
+            float startY = centerY - totalH / 2;
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                Vector2 size = scoreFont.MeasureString(lines[i]);
+                Vector2 pos = new Vector2(centerX - size.X / 2, startY + i * (lh + 10));
+                spriteBatch.DrawString(scoreFont, lines[i], pos, cols[i]);
+            }
+        }
+        private void DrawOptions()
+        {
+            // Centered Options screen
+            Viewport vp = GraphicsDevice.Viewport;
+            int centerX = vp.Width / 2;
+            int centerY = vp.Height / 2;
+
+            string[] lines = { "Options", "Press Escape to return" };
+            float lineHeight = scoreFont.LineSpacing;
+            float padding = 10;
+            float totalHeight = lines.Length * lineHeight + (lines.Length - 1) * padding;
+            float startY = centerY - totalHeight / 2;
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                Vector2 textSize = scoreFont.MeasureString(lines[i]);
+                Vector2 position = new Vector2(
+                    centerX - textSize.X / 2,
+                    startY + i * (lineHeight + padding)
+                );
+                spriteBatch.DrawString(scoreFont, lines[i], position, Color.White);
+            }
+        }
         private void SpawnEnemy()
         {
             // Enemies spawn from just above the playable area, and only within its width.
@@ -638,5 +574,107 @@ namespace SemestralniPraceC_
                 File.WriteAllText(highScoreFilePath, highScore.ToString());
             }
         }
+        private void ResetGame()
+        {
+            score = 0;
+            playerHP = 100;
+            currentLevel = selectedLevel;
+            enemySpeed = 100f;
+            scoreForNextLevel = baseThreshold;
+            enemies.Clear();
+            bullets.Clear();
+        }
+        private void UpdatePlaying(GameTime gameTime)
+        {
+            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            // Ship vs enemy collision
+            Rectangle shipBounds = new Rectangle((int)spaceshipPosition.X, (int)spaceshipPosition.Y, spaceshipTexture.Width, spaceshipTexture.Height);
+            for (int i = enemies.Count - 1; i >= 0; i--)
+            {
+                if (enemies[i].GetBounds().Intersects(shipBounds))
+                {
+                    currentState = GameState.GameOver;
+                    return;
+                }
+            }
+            // Enemy reach bottom
+            for (int i = enemies.Count - 1; i >= 0; i--)
+            {
+                if (enemies[i].Position.Y + enemyTexture.Height >= playableArea.Y + (int)(playableArea.Height * 0.99))
+                {
+                    playerHP -= 10;
+                    enemies.RemoveAt(i);
+                    if (playerHP <= 0)
+                    {
+                        currentState = GameState.GameOver;
+                        return;
+                    }
+                }
+            }
+            // Spawn
+            spawnTimer -= deltaTime;
+            if (spawnTimer <= 0f) { SpawnEnemy(); spawnTimer = baseSpawnInterval / currentLevel; }
+            // Update bullets & enemies
+            bullets.RemoveAll(b => { b.Update(deltaTime); return !b.IsActive; });
+            enemies.RemoveAll(e => { e.Update(deltaTime); return !e.IsActive; });
+            // Bullet-enemy collisions
+            foreach (var enemy in enemies.ToArray())
+            {
+                Rectangle eb = enemy.GetBounds();
+                foreach (var bullet in bullets.ToArray())
+                {
+                    Rectangle bb = new Rectangle((int)bullet.Position.X, (int)bullet.Position.Y, bulletTexture.Width, bulletTexture.Height);
+                    if (eb.Intersects(bb))
+                    {
+                        enemy.IsActive = false;
+                        bullet.IsActive = false;
+                        score += basePoints * currentLevel;
+                        soundInstance2.Volume = 0.3f;
+                        soundInstance2.Play();
+                        break;
+                    }
+                }
+            }
+            // Level up
+            if (score >= scoreForNextLevel)
+            {
+                score -= scoreForNextLevel;
+                if (currentLevel >= maxLevel) { currentState = GameState.Victory; return; }
+                currentLevel++;
+                scoreForNextLevel = baseThreshold * currentLevel * currentLevel;
+                enemySpeed *= 1.1f;
+            }
+            // Input & effects
+            ProcessInput(Keyboard.GetState(), gameTime);
+            UpdateBullets(gameTime);
+            UpdateParticles(gameTime);
+            UpdateRecoil(gameTime);
+        }
+        private void DrawPlaying()
+        {
+            // Draw ship
+            Vector2 drawPos = isRecoilActive ? spaceshipPosition + recoilOffset : spaceshipPosition;
+            spriteBatch.Draw(spaceshipTexture, drawPos, Color.White);
+            // Particles
+            particleSystem.Draw(spriteBatch);
+            // Bullets
+            float bs = 0.5f;
+            foreach (var bullet in bullets)
+            {
+                spriteBatch.Draw(bulletTexture, bullet.Position, null, Color.White, 0f, new Vector2(bulletTexture.Width / 2, bulletTexture.Height / 2), bs, SpriteEffects.None, 0f);
+            }
+            // Enemies
+            foreach (var enemy in enemies) enemy.Draw(spriteBatch);
+            // HUD
+            spriteBatch.DrawString(scoreFont, "Score: " + score, new Vector2(10, 10), Color.White);
+            spriteBatch.DrawString(scoreFont, "Level: " + currentLevel, new Vector2(10, 40), Color.White);
+            spriteBatch.DrawString(scoreFont, "HP: " + playerHP, new Vector2(10, 70), Color.White);
+            // Borders
+            Texture2D border = new Texture2D(GraphicsDevice, 1, 1);
+            border.SetData(new[] { Color.Yellow });
+            spriteBatch.Draw(border, new Rectangle(playableArea.X, playableArea.Y, 2, playableArea.Height), Color.Yellow);
+            spriteBatch.Draw(border, new Rectangle(playableArea.X + playableArea.Width - 2, playableArea.Y, 2, playableArea.Height), Color.Yellow);
+        }
     }
+
 }
