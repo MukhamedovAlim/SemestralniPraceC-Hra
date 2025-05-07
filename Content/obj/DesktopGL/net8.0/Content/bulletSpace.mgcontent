@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <SourceFile>C:/Users/alim2/Documents/SemestralniPraceC#/Content/bulletSpace.png</SourceFile>
-  <SourceTime>2025-02-27T12:31:54.0008527+01:00</SourceTime>
-  <DestFile>C:/Users/alim2/Documents/SemestralniPraceC#/Content/bin/DesktopGL/Content/bulletSpace.xnb</DestFile>
-  <DestTime>2025-02-27T12:35:56.72916+01:00</DestTime>
+  <SourceFile>C:/Users/alim2/Documents/semestralniPraceC#/SemestralniPraceC-Hra/Content/bulletSpace.png</SourceFile>
+  <SourceTime>2025-05-07T13:18:37.9248741+02:00</SourceTime>
+  <DestFile>C:/Users/alim2/Documents/semestralniPraceC#/SemestralniPraceC-Hra/Content/bin/DesktopGL/Content/bulletSpace.xnb</DestFile>
+  <DestTime>2025-05-07T13:18:56.6066277+02:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2024-08-16T19:05:56+02:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

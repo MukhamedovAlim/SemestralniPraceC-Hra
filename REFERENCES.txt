@@ -5,11 +5,15 @@
 - **GPL 3.0**: Your project must also be GPL 3.0 licensed if you use this asset.
 
 ## Graphics
-Space Ship Construction Kit /content/ - CC-BY-SA 3.0, GPL 3.0
-Author: Skorpio
+Space Ship Construction Kit /content/ - CC-BY-SA 3.0, GPL 3.0  
+Author: Skorpio  
 Source: https://opengameart.org/content/space-ship-construction-kit
 
 ## Sound Effects
-Projectile Launch Sound /Content/Sounds/projectile_launch.ogg - CC0 License
-Author: Michel Baradari
+Projectile Launch Sound /Content/Sounds/projectile_launch.ogg - CC0 License  
+Author: Michel Baradari  
 Source: https://opengameart.org/content/4-projectile-launches
+
+## Books
+Programování v C# od základů k profesionálnímu použití  
+Source: https://www.megaknihy.cz/informacni-technologie/650773-programovani-v-c-od-zakladu-k-profesionalnimu-pouziti.html

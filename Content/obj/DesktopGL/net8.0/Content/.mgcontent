@@ -4,13 +4,13 @@
   <Platform>DesktopGL</Platform>
   <Config />
   <SourceFiles>
-    <File>C:/Users/alim2/Documents/SemestralniPraceC#/Content/1.png</File>
-    <File>C:/Users/alim2/Documents/SemestralniPraceC#/Content/2B.png</File>
-    <File>C:/Users/alim2/Documents/SemestralniPraceC#/Content/bulletSpace.png</File>
-    <File>C:/Users/alim2/Documents/SemestralniPraceC#/Content/flaunch.wav</File>
-    <File>C:/Users/alim2/Documents/SemestralniPraceC#/Content/iceball.wav</File>
-    <File>C:/Users/alim2/Documents/SemestralniPraceC#/Content/ScoreFont.spritefont</File>
-    <File>C:/Users/alim2/Documents/SemestralniPraceC#/Content/slimeball.wav</File>
+    <File>C:/Users/alim2/Documents/semestralniPraceC#/SemestralniPraceC-Hra/Content/1.png</File>
+    <File>C:/Users/alim2/Documents/semestralniPraceC#/SemestralniPraceC-Hra/Content/2B.png</File>
+    <File>C:/Users/alim2/Documents/semestralniPraceC#/SemestralniPraceC-Hra/Content/bulletSpace.png</File>
+    <File>C:/Users/alim2/Documents/semestralniPraceC#/SemestralniPraceC-Hra/Content/flaunch.wav</File>
+    <File>C:/Users/alim2/Documents/semestralniPraceC#/SemestralniPraceC-Hra/Content/iceball.wav</File>
+    <File>C:/Users/alim2/Documents/semestralniPraceC#/SemestralniPraceC-Hra/Content/ScoreFont.spritefont</File>
+    <File>C:/Users/alim2/Documents/semestralniPraceC#/SemestralniPraceC-Hra/Content/slimeball.wav</File>
   </SourceFiles>
   <DestFiles>
     <File xsi:nil="true" />
